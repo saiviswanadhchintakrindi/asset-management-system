@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AssetFlow — Office Asset Tracker</title>
+  <meta name="description" content="Centralized office asset tracking and employee service request management system." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- Loading Overlay -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="loader-ring"></div>
+  </div>
+
+  <!-- Ambient Realistic Background -->
+  <div class="ambient-bg">
+    <div class="ambient-orb orb-primary"></div>
+    <div class="ambient-orb orb-secondary"></div>
+    <div class="ambient-orb orb-accent"></div>
+    <div class="ambient-noise"></div>
+  </div>
+
+  <!-- Auth Pages -->
+  <div id="auth-page" class="auth-page hidden">
+    <div class="auth-bg">
+      <div class="auth-blob auth-blob-1"></div>
+      <div class="auth-blob auth-blob-2"></div>
+    </div>
+    <div class="auth-container">
+      <div class="auth-brand">
+        <div class="brand-icon">⚡</div>
+        <h1 class="brand-name">AssetFlow</h1>
+        <p class="brand-tagline">Office Asset Tracking System</p>
+      </div>
+      <div class="auth-card" id="auth-card">
+        <!-- Login Form -->
+        <div id="login-form-container">
+          <h2 class="auth-title">Welcome back</h2>
+          <p class="auth-subtitle">Sign in to your account</p>
+          <form id="login-form" class="auth-form">
+            <div class="form-group">
+              <label for="login-email">Email Address</label>
+              <input type="email" id="login-email" placeholder="admin@example.com" required autocomplete="email" />
+            </div>
+            <div class="form-group">
+              <label for="login-password">Password</label>
+              <div class="input-with-icon">
+                <input type="password" id="login-password" placeholder="••••••••" required autocomplete="current-password" />
+                <button type="button" class="toggle-password" onclick="togglePassword('login-password', this)">👁</button>
+              </div>
+            </div>
+            <div id="login-error" class="form-error hidden"></div>
+            <button type="submit" id="login-btn" class="btn btn-primary btn-full">Sign In</button>
+          </form>
+          <div class="auth-demo-hints">
+            <p class="demo-label">Demo Credentials:</p>
+            <button class="demo-btn" onclick="fillDemo('admin@example.com','Admin@123')">🔑 Admin Login</button>
+            <button class="demo-btn" onclick="fillDemo('alice@example.com','Employee@123')">👤 Employee Login</button>
+          </div>
+          <p class="auth-switch">New employee? <a href="#" onclick="showRegister()">Create account</a></p>
+        </div>
+
+        <!-- Register Form -->
+        <div id="register-form-container" class="hidden">
+          <h2 class="auth-title">Create account</h2>
+          <p class="auth-subtitle">Register as a new employee</p>
+          <form id="register-form" class="auth-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="reg-name">Full Name</label>
+                <input type="text" id="reg-name" placeholder="John Doe" required />
+              </div>
+              <div class="form-group">
+                <label for="reg-dept">Department</label>
+                <input type="text" id="reg-dept" placeholder="Engineering" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="reg-email">Email Address</label>
+              <input type="email" id="reg-email" placeholder="john@example.com" required />
+            </div>
+            <div class="form-group">
+              <label for="reg-phone">Phone Number</label>
+              <input type="tel" id="reg-phone" placeholder="9876543210" />
+            </div>
+            <div class="form-group">
+              <label for="reg-password">Password</label>
+              <input type="password" id="reg-password" placeholder="Min. 6 characters" required />
+            </div>
+            <div id="register-error" class="form-error hidden"></div>
+            <button type="submit" id="register-btn" class="btn btn-primary btn-full">Create Account</button>
+          </form>
+          <p class="auth-switch">Already have an account? <a href="#" onclick="showLogin()">Sign in</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- App Shell -->
+  <div id="app" class="app hidden">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon-sm">⚡</div>
+        <span class="brand-name-sm">AssetFlow</span>
+        <button class="sidebar-close" id="sidebar-close" onclick="toggleSidebar()">✕</button>
+      </div>
+
+      <div class="sidebar-user">
+        <div class="user-avatar" id="nav-avatar">A</div>
+        <div class="user-info">
+          <div class="user-name" id="nav-user-name">User</div>
+          <div class="user-role" id="nav-user-role">Employee</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Main</div>
+        <a href="#dashboard" class="nav-item" data-page="dashboard" id="nav-dashboard">
+          <span class="nav-icon">📊</span><span class="nav-text">Dashboard</span>
+        </a>
+        <a href="#assets" class="nav-item" data-page="assets" id="nav-assets">
+          <span class="nav-icon">💻</span><span class="nav-text">Assets</span>
+        </a>
+        <a href="#requests" class="nav-item" data-page="requests" id="nav-requests">
+          <span class="nav-icon">📋</span><span class="nav-text">Service Requests</span>
+          <span class="nav-badge" id="requests-badge" style="display:none"></span>
+        </a>
+        <a href="#notifications" class="nav-item" data-page="notifications" id="nav-notifications">
+          <span class="nav-icon">🔔</span><span class="nav-text">Notifications</span>
+          <span class="nav-badge" id="notif-badge" style="display:none"></span>
+        </a>
+
+        <div class="nav-section-label admin-only" id="admin-section-label">Administration</div>
+        <a href="#employees" class="nav-item admin-only" data-page="employees" id="nav-employees">
+          <span class="nav-icon">👥</span><span class="nav-text">Employees</span>
+        </a>
+        <a href="#reports" class="nav-item admin-only" data-page="reports" id="nav-reports">
+          <span class="nav-icon">📈</span><span class="nav-text">Reports</span>
+        </a>
+        <a href="#audit" class="nav-item admin-only" data-page="audit" id="nav-audit">
+          <span class="nav-icon">🔍</span><span class="nav-text">Audit Logs</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a href="#profile" class="nav-item" data-page="profile">
+          <span class="nav-icon">⚙️</span><span class="nav-text">Profile & Settings</span>
+        </a>
+        <button class="nav-item logout-btn" onclick="logout()" id="logout-btn">
+          <span class="nav-icon">🚪</span><span class="nav-text">Sign Out</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Overlay for mobile sidebar -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Bar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="hamburger" onclick="toggleSidebar()" id="hamburger-btn">
+            <span></span><span></span><span></span>
+          </button>
+          <div class="page-breadcrumb">
+            <span id="page-title">Dashboard</span>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="icon-btn notif-btn" onclick="navigate('notifications')" id="topbar-notif">
+            🔔
+            <span class="notif-dot" id="notif-dot" style="display:none"></span>
+          </button>
+          <div class="topbar-user" onclick="navigate('profile')">
+            <div class="user-avatar-sm" id="topbar-avatar">A</div>
+            <span id="topbar-name">User</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Content -->
+      <div class="page-content" id="page-content">
+        <!-- Pages are rendered here by JS -->
+      </div>
+    </main>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Modal Container -->
+  <div id="modal-overlay" class="modal-overlay hidden" onclick="closeModal(event)">
+    <div class="modal" id="modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-title">Modal</h3>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body" id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/assets.js"></script>
+  <script src="js/requests.js"></script>
+  <script src="js/employees.js"></script>
+  <script src="js/reports.js"></script>
+  <script src="js/notifications.js"></script>
+  <script src="js/audit.js"></script>
+  <script src="js/profile.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
