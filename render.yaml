@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: office-asset-tracker
+    env: node
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: DB_PATH
+        value: ./database/office_assets.db
+      - key: FRONTEND_URL
+        value: https://office-asset-tracker.onrender.com
