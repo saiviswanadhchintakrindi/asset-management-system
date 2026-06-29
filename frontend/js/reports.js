@@ -15,19 +15,18 @@ function loadReports() {
 
     <div class="grid grid-cols-2 gap-6">
       <!-- Asset Report Generator -->
-      <div class="card relative overflow-hidden group">
-        <div class="absolute -right-4 -top-4 w-32 h-32 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/20 transition-colors pointer-events-none"></div>
-        <div class="card-title text-primary-light mb-4 flex items-center gap-2"><span class="text-xl">💻</span> Asset Inventory Report</div>
-        <p class="text-sm text-secondary mb-6 leading-relaxed">Generate a comprehensive report of all assets including value, assignment status, and departmental distribution.</p>
+      <div class="card" style="border-left: 4px solid var(--primary);">
+        <div class="card-title mb-4 flex items-center gap-2"><span class="text-xl">💻</span> Asset Inventory Report</div>
+        <p class="text-sm text-muted mb-4">Generate a comprehensive report of all assets including value, assignment status, and departmental distribution.</p>
         
-        <form onsubmit="generateAssetReport(event)" class="space-y-4 relative z-10">
+        <form onsubmit="generateAssetReport(event)">
           <div class="form-group">
             <label>Filter by Category</label>
             <select id="rpt-ast-cat">
               <option value="">All Categories</option>
             </select>
           </div>
-          <div class="grid grid-cols-2 gap-4">
+          <div class="form-row mb-4">
             <div class="form-group">
               <label>Purchased After</label>
               <input type="date" id="rpt-ast-from">
@@ -42,13 +41,12 @@ function loadReports() {
       </div>
 
       <!-- Service Requests Report Generator -->
-      <div class="card relative overflow-hidden group">
-        <div class="absolute -right-4 -top-4 w-32 h-32 bg-info/10 rounded-full blur-2xl group-hover:bg-info/20 transition-colors pointer-events-none"></div>
-        <div class="card-title text-info-light mb-4 flex items-center gap-2"><span class="text-xl">📋</span> Service Requests Report</div>
-        <p class="text-sm text-secondary mb-6 leading-relaxed">Analyze support ticket volume, resolution times, and identify common maintenance issues.</p>
+      <div class="card" style="border-left: 4px solid var(--info);">
+        <div class="card-title mb-4 flex items-center gap-2"><span class="text-xl">📋</span> Service Requests Report</div>
+        <p class="text-sm text-muted mb-4">Analyze support ticket volume, resolution times, and identify common maintenance issues.</p>
         
-        <form onsubmit="generateRequestReport(event)" class="space-y-4 relative z-10">
-          <div class="grid grid-cols-2 gap-4">
+        <form onsubmit="generateRequestReport(event)">
+          <div class="form-row mb-4">
             <div class="form-group">
               <label>Status</label>
               <select id="rpt-req-status">
@@ -66,7 +64,7 @@ function loadReports() {
               </select>
             </div>
           </div>
-          <div class="grid grid-cols-2 gap-4">
+          <div class="form-row mb-4">
             <div class="form-group">
               <label>From Date</label>
               <input type="date" id="rpt-req-from">
@@ -76,7 +74,7 @@ function loadReports() {
               <input type="date" id="rpt-req-to">
             </div>
           </div>
-          <button type="submit" class="btn btn-info w-full" id="btn-gen-req" style="background:var(--info); color:#fff">Generate Report</button>
+          <button type="submit" class="btn w-full" style="background: var(--info); color: #fff;" id="btn-gen-req">Generate Report</button>
         </form>
       </div>
     </div>
@@ -126,18 +124,17 @@ function renderAssetReportOutput(data) {
   const container = document.getElementById('report-output-container');
   container.classList.remove('hidden');
 
-  // Store data globally for CSV export
   window._reportAssetData = data.assets;
 
   const totalCost = data.summary.reduce((sum, s) => sum + (s.total_value || 0), 0);
   const totalAssets = data.assets.length;
 
   container.innerHTML = `
-    <div class="card bg-bg-light border-primary/30 shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
-      <div class="flex justify-between items-center mb-6 pb-4 border-b border-border">
+    <div class="card" style="border-left: 4px solid var(--primary);">
+      <div class="flex justify-between items-center mb-4 pb-4 border-b">
         <div>
-          <h3 class="text-xl font-bold text-primary-light flex items-center gap-2"><span>📊</span> Asset Inventory Report</h3>
-          <p class="text-sm text-secondary mt-1">Generated: ${formatDateTime(data.generated_at)}</p>
+          <h3 class="text-lg font-bold flex items-center gap-2">📊 Asset Inventory Report</h3>
+          <p class="text-sm text-muted mt-1">Generated: ${formatDateTime(data.generated_at)}</p>
         </div>
         <div class="flex gap-2">
           <button class="btn btn-secondary btn-sm" onclick="exportReportCSV('asset')">📥 Export CSV</button>
@@ -145,19 +142,32 @@ function renderAssetReportOutput(data) {
         </div>
       </div>
 
-      <div class="grid grid-cols-3 gap-4 mb-8">
-        <div class="bg-bg-input p-4 rounded-lg border border-border">
-          <div class="text-xs text-muted uppercase mb-1">Total Assets matching criteria</div>
+      <div class="grid grid-cols-3 gap-4 mb-6">
+        <div class="p-4 rounded-lg border" style="background: var(--bg-hover);">
+          <div class="text-xs text-muted uppercase mb-1">Total Assets</div>
           <div class="text-2xl font-bold">${totalAssets}</div>
         </div>
-        <div class="bg-bg-input p-4 rounded-lg border border-border">
-          <div class="text-xs text-muted uppercase mb-1">Total Purchase Value</div>
+        <div class="p-4 rounded-lg border" style="background: var(--bg-hover);">
+          <div class="text-xs text-muted uppercase mb-1">Total Value</div>
           <div class="text-2xl font-bold text-success">${formatCurrency(totalCost)}</div>
         </div>
-        <div class="bg-bg-input p-4 rounded-lg border border-border">
-          <div class="text-xs text-muted uppercase mb-1">Assigned vs Available</div>
-          <div class="text-sm mt-1">
-            ${data.summary.map(s => `<div class="flex justify-between"><span>${capitalize(s.status)}:</span> <span class="font-bold">${s.count}</span></div>`).join('')}
+        <div class="p-4 rounded-lg border" style="background: var(--bg-hover);">
+          <div class="text-xs text-muted uppercase mb-1">Departments</div>
+          <div class="text-2xl font-bold">${data.byDepartment.length}</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4 mb-6">
+        <div class="p-3 rounded-lg border" style="background: var(--bg-surface);">
+          <h4 class="font-semibold mb-2 text-xs text-muted uppercase tracking-wider">Assets by Status</h4>
+          <div style="max-width: 280px; margin: 0 auto;">
+            <canvas id="chart-asset-status" height="160"></canvas>
+          </div>
+        </div>
+        <div class="p-3 rounded-lg border" style="background: var(--bg-surface);">
+          <h4 class="font-semibold mb-2 text-xs text-muted uppercase tracking-wider">Assets by Department</h4>
+          <div style="max-width: 260px; margin: 0 auto;">
+            <canvas id="chart-asset-dept" height="160"></canvas>
           </div>
         </div>
       </div>
@@ -176,15 +186,15 @@ function renderAssetReportOutput(data) {
             </tr>
           </thead>
           <tbody>
-            ${data.assets.length === 0 ? '<tr><td colspan="6" class="text-center py-4">No assets found for given criteria</td></tr>' : ''}
+            ${data.assets.length === 0 ? '<tr><td colspan="6" class="text-center py-4 text-muted">No assets found</td></tr>' : ''}
             ${data.assets.map(a => `
               <tr>
                 <td class="font-medium">${a.name}</td>
                 <td class="font-mono text-xs text-muted">${a.serial_number || '-'}</td>
                 <td>${a.category_name}</td>
-                <td><span class="badge status-${a.status} px-2 py-0.5 text-[10px]">${a.status}</span></td>
+                <td><span class="badge status-${a.status}">${a.status}</span></td>
                 <td class="font-mono">${formatCurrency(a.purchase_cost)}</td>
-                <td>${a.assigned_to_name ? `${a.assigned_to_name} <span class="text-[10px] text-muted block">${a.assigned_department}</span>` : '-'}</td>
+                <td>${a.assigned_to_name || '-'}</td>
               </tr>
             `).join('')}
           </tbody>
@@ -193,6 +203,60 @@ function renderAssetReportOutput(data) {
     </div>
   `;
   container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  // Render charts
+  setTimeout(() => {
+    const statusCtx = document.getElementById('chart-asset-status');
+    const deptCtx = document.getElementById('chart-asset-dept');
+    if (!statusCtx || !deptCtx) return;
+
+    const colors = { available: '#16a34a', assigned: '#2563eb', maintenance: '#d97706', retired: '#94a3b8' };
+
+    new Chart(statusCtx, {
+      type: 'bar',
+      data: {
+        labels: data.summary.map(s => capitalize(s.status)),
+        datasets: [{
+          label: 'Count',
+          data: data.summary.map(s => s.count),
+          backgroundColor: data.summary.map(s => colors[s.status] || '#6366f1'),
+          borderRadius: 4,
+          barThickness: 28,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 10 } }, grid: { color: '#e2e8f0' } },
+          x: { ticks: { font: { size: 10 } }, grid: { display: false } }
+        }
+      }
+    });
+
+    const deptColors = ['#2563eb','#16a34a','#d97706','#dc2626','#6366f1','#0891b2','#059669','#7c3aed','#e11d48','#ca8a04'];
+    new Chart(deptCtx, {
+      type: 'doughnut',
+      data: {
+        labels: data.byDepartment.map(d => d.department || 'Unknown'),
+        datasets: [{
+          data: data.byDepartment.map(d => d.assigned_count),
+          backgroundColor: deptColors.slice(0, Math.max(data.byDepartment.length, 1)),
+          borderWidth: 2,
+          borderColor: '#fff',
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '60%',
+        plugins: {
+          legend: { position: 'bottom', labels: { boxWidth: 10, padding: 10, font: { size: 10 }, usePointStyle: true } }
+        }
+      }
+    });
+  }, 200);
 }
 
 async function generateRequestReport(e) {
@@ -225,15 +289,14 @@ function renderRequestReportOutput(data) {
   const container = document.getElementById('report-output-container');
   container.classList.remove('hidden');
 
-  // Store data globally for CSV export
   window._reportRequestData = data.requests;
 
   container.innerHTML = `
-    <div class="card bg-bg-light border-info/30 shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
-      <div class="flex justify-between items-center mb-6 pb-4 border-b border-border">
+    <div class="card" style="border-left: 4px solid var(--info);">
+      <div class="flex justify-between items-center mb-4 pb-4 border-b">
         <div>
-          <h3 class="text-xl font-bold text-info-light flex items-center gap-2"><span>📈</span> Service Requests Analytics</h3>
-          <p class="text-sm text-secondary mt-1">Generated: ${formatDateTime(data.generated_at)}</p>
+          <h3 class="text-lg font-bold flex items-center gap-2">📈 Service Requests Analytics</h3>
+          <p class="text-sm text-muted mt-1">Generated: ${formatDateTime(data.generated_at)}</p>
         </div>
         <div class="flex gap-2">
           <button class="btn btn-secondary btn-sm" onclick="exportReportCSV('request')">📥 Export CSV</button>
@@ -241,20 +304,35 @@ function renderRequestReportOutput(data) {
         </div>
       </div>
 
-      <div class="grid grid-cols-4 gap-4 mb-8">
-        <div class="bg-bg-input p-4 rounded-lg border border-border">
+      <div class="grid grid-cols-3 gap-4 mb-6">
+        <div class="p-4 rounded-lg border" style="background: var(--bg-hover);">
           <div class="text-xs text-muted uppercase mb-1">Total Requests</div>
           <div class="text-2xl font-bold">${data.requests.length}</div>
         </div>
-        <div class="bg-bg-input p-4 rounded-lg border border-border col-span-2">
-          <div class="text-xs text-muted uppercase mb-1">By Type</div>
-          <div class="flex gap-4 mt-2">
-            ${data.byType.map(t => `<div class="flex items-center gap-1"><span class="badge badge-primary px-1.5 py-0.5 text-[10px]">${capitalize(t.type)}</span> <span class="font-bold text-sm">${t.count}</span></div>`).join('')}
+        <div class="p-4 rounded-lg border" style="background: var(--bg-hover);">
+          <div class="text-xs text-muted uppercase mb-1">Avg Resolution</div>
+          <div class="text-2xl font-bold text-warning">${data.avgResolutionDays !== 'N/A' ? `${data.avgResolutionDays} days` : 'N/A'}</div>
+        </div>
+        <div class="p-4 rounded-lg border" style="background: var(--bg-hover);">
+          <div class="text-xs text-muted uppercase mb-1">By Priority</div>
+          <div class="text-sm mt-1">
+            ${data.byPriority.map(p => `<div class="flex justify-between"><span>${capitalize(p.priority)}:</span> <span class="font-bold">${p.count}</span></div>`).join('')}
           </div>
         </div>
-        <div class="bg-bg-input p-4 rounded-lg border border-border">
-          <div class="text-xs text-muted uppercase mb-1">Avg Resolution</div>
-          <div class="text-2xl font-bold text-warning">${data.avgResolutionDays !== 'N/A' ? `${data.avgResolutionDays} <span class="text-sm font-normal text-muted">days</span>` : 'N/A'}</div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4 mb-6">
+        <div class="p-3 rounded-lg border" style="background: var(--bg-surface);">
+          <h4 class="font-semibold mb-2 text-xs text-muted uppercase tracking-wider">Requests by Status</h4>
+          <div style="max-width: 260px; margin: 0 auto;">
+            <canvas id="chart-req-status" height="160"></canvas>
+          </div>
+        </div>
+        <div class="p-3 rounded-lg border" style="background: var(--bg-surface);">
+          <h4 class="font-semibold mb-2 text-xs text-muted uppercase tracking-wider">Requests by Type</h4>
+          <div style="max-width: 280px; margin: 0 auto;">
+            <canvas id="chart-req-type" height="160"></canvas>
+          </div>
         </div>
       </div>
 
@@ -272,15 +350,15 @@ function renderRequestReportOutput(data) {
             </tr>
           </thead>
           <tbody>
-            ${data.requests.length === 0 ? '<tr><td colspan="6" class="text-center py-4">No requests found for given criteria</td></tr>' : ''}
+            ${data.requests.length === 0 ? '<tr><td colspan="6" class="text-center py-4 text-muted">No requests found</td></tr>' : ''}
             ${data.requests.map(r => `
               <tr>
                 <td class="font-mono text-xs text-muted">REQ-${r.id.toString().padStart(4,'0')}</td>
                 <td>${formatDate(r.created_at)}</td>
                 <td>${capitalize(r.type)}</td>
-                <td>${r.requester_name} <span class="text-[10px] text-muted block">${r.department}</span></td>
+                <td>${r.requester_name || '-'}<span class="text-xs text-muted block">${r.department || ''}</span></td>
                 <td class="max-w-[200px] truncate" title="${r.title}">${r.title}</td>
-                <td><span class="badge status-${r.status} px-2 py-0.5 text-[10px]">${r.status}</span></td>
+                <td><span class="badge status-${r.status}">${r.status}</span></td>
               </tr>
             `).join('')}
           </tbody>
@@ -289,4 +367,59 @@ function renderRequestReportOutput(data) {
     </div>
   `;
   container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  // Render charts
+  setTimeout(() => {
+    const statusCtx = document.getElementById('chart-req-status');
+    const typeCtx = document.getElementById('chart-req-type');
+    if (!statusCtx || !typeCtx) return;
+
+    const statusColors = {
+      pending: '#d97706', approved: '#2563eb', in_progress: '#7c3aed',
+      completed: '#16a34a', rejected: '#dc2626', cancelled: '#94a3b8'
+    };
+
+    new Chart(statusCtx, {
+      type: 'doughnut',
+      data: {
+        labels: data.byStatus.map(s => capitalize(s.status)),
+        datasets: [{
+          data: data.byStatus.map(s => s.count),
+          backgroundColor: data.byStatus.map(s => statusColors[s.status] || '#6366f1'),
+          borderWidth: 2,
+          borderColor: '#fff',
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '60%',
+        plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, padding: 10, font: { size: 10 }, usePointStyle: true } } }
+      }
+    });
+
+    const typeColors = { asset_request: '#2563eb', maintenance: '#d97706', service: '#16a34a', other: '#7c3aed' };
+    new Chart(typeCtx, {
+      type: 'bar',
+      data: {
+        labels: data.byType.map(t => capitalize(t.type)),
+        datasets: [{
+          label: 'Count',
+          data: data.byType.map(t => t.count),
+          backgroundColor: data.byType.map(t => typeColors[t.type] || '#6366f1'),
+          borderRadius: 4,
+          barThickness: 28,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 10 } }, grid: { color: '#e2e8f0' } },
+          x: { ticks: { font: { size: 10 } }, grid: { display: false } }
+        }
+      }
+    });
+  }, 200);
 }
