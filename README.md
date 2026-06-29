@@ -8,16 +8,6 @@ A full-stack web application for digitizing office asset tracking and employee s
 
 🌐 **Deployed at:** [https://asset-management-system.onrender.com](https://asset-management-system.onrender.com)
 
-🔑 **Demo Credentials:**
-
-| Role | Email | Password |
-|------|-------|----------|
-| Admin | `admin@example.com` | `Admin@123` |
-| Employee | `alice@example.com` | `Employee@123` |
-| Employee | `bob@example.com` | `Employee@123` |
-
----
-
 ## Features
 
 ### Authentication & Authorization
