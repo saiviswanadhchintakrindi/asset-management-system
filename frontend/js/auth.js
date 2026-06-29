@@ -24,10 +24,9 @@ document.addEventListener('DOMContentLoaded', () => {
           body: { email, password }
         });
 
-        localStorage.setItem('token', res.data.token);
-        localStorage.setItem('user', JSON.stringify(res.data.user));
-        
-        window.location.reload();
+        setAuth(res.data.token, res.data.user);
+        window.location.hash = '#dashboard';
+        showAppShell();
       } catch (err) {
         errDiv.textContent = err.message;
         errDiv.classList.remove('hidden');
@@ -60,10 +59,9 @@ document.addEventListener('DOMContentLoaded', () => {
           body: { name, email, department, phone, password }
         });
 
-        localStorage.setItem('token', res.data.token);
-        localStorage.setItem('user', JSON.stringify(res.data.user));
-        
-        window.location.reload();
+        setAuth(res.data.token, res.data.user);
+        window.location.hash = '#dashboard';
+        showAppShell();
       } catch (err) {
         errDiv.textContent = err.message;
         errDiv.classList.remove('hidden');
@@ -103,12 +101,11 @@ function fillDemo(email, pass) {
 }
 
 function logout() {
-  localStorage.removeItem('token');
-  localStorage.removeItem('user');
+  clearAuth();
+  window.location.hash = '';
   window.location.reload();
 }
 
 function getCurrentUser() {
-  const userStr = localStorage.getItem('user');
-  return userStr ? JSON.parse(userStr) : null;
+  return getAuthUser();
 }

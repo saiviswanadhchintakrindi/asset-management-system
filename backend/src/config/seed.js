@@ -96,14 +96,14 @@ async function seed() {
   const getAsset = (serial) => queryOne('SELECT id FROM assets WHERE serial_number = ?', [serial])?.id;
 
   const assignments = [
-    [getAsset('DL-001-2024'), aliceId,  adminId, '2024-01-20 10:00:00', 'Primary work laptop'],
-    [getAsset('DL-002-2024'), bobId,    adminId, '2024-01-20 10:00:00', 'Primary work laptop'],
-    [getAsset('HP-D001-2024'), carolId, adminId, '2024-02-25 10:00:00', 'Primary workstation'],
-    [getAsset('LG-M001-2024'), aliceId, adminId, '2024-01-20 10:00:00', 'External monitor'],
-    [getAsset('LG-K001-2024'), bobId,   adminId, '2024-03-05 10:00:00', 'Keyboard and mouse combo'],
-    [getAsset('AP-I001-2024'), bobId,   adminId, '2024-04-05 10:00:00', 'For field presentations'],
-    [getAsset('DL-003-2024'), davidId,  adminId, '2024-05-05 10:00:00', 'Primary work laptop'],
-    [getAsset('HP-W001-2024'), eveId,   adminId, '2024-02-05 10:00:00', 'For video calls'],
+    [getAsset('DL-001-2024'), aliceId,  adminId, nowStr, 'Primary work laptop'],
+    [getAsset('DL-002-2024'), bobId,    adminId, nowStr, 'Primary work laptop'],
+    [getAsset('HP-D001-2024'), carolId, adminId, nowStr, 'Primary workstation'],
+    [getAsset('LG-M001-2024'), aliceId, adminId, nowStr, 'External monitor'],
+    [getAsset('LG-K001-2024'), bobId,   adminId, nowStr, 'Keyboard and mouse combo'],
+    [getAsset('AP-I001-2024'), bobId,   adminId, nowStr, 'For field presentations'],
+    [getAsset('DL-003-2024'), davidId,  adminId, nowStr, 'Primary work laptop'],
+    [getAsset('HP-W001-2024'), eveId,   adminId, nowStr, 'For video calls'],
   ];
 
   for (const [assetId, userId, assignedBy, date, notes] of assignments) {
@@ -114,14 +114,14 @@ async function seed() {
 
   // ── Service Requests ────────────────────────────────────────
   const requests = [
-    [aliceId,  'asset_request', 'Need a second monitor for dual-screen setup', 'I need a second monitor to improve productivity on development tasks. Currently working with a single screen.', 'high',     'pending',     null, null,    '2024-06-01 09:00:00', '2024-06-01 09:00:00'],
-    [bobId,    'maintenance',   'Laptop fan making noise',                       'My Dell Latitude laptop fan has started making loud grinding noises. It gets very hot during video calls.',         'medium',   'in_progress', getAsset('DL-002-2024'), adminId, '2024-06-02 10:30:00', '2024-06-03 11:00:00'],
-    [carolId,  'service',       'VPN access for remote work',                    'I need VPN access configured on my workstation to work from home on Fridays.',                                      'medium',   'approved',    null, adminId, '2024-06-03 08:00:00', '2024-06-04 09:00:00'],
-    [davidId,  'asset_request', 'Request for wireless mouse',                    'My current wired mouse cable is damaged. I would prefer a wireless mouse for cleaner desk setup.',                  'low',      'completed',   null, adminId, '2024-05-20 14:00:00', '2024-05-22 16:00:00'],
-    [eveId,    'maintenance',   'Webcam not detected by system',                 'The HP webcam assigned to me is not being detected by Windows. I have tried reinstalling drivers.',                 'high',     'pending',     getAsset('HP-W001-2024'), null, '2024-06-05 11:00:00', '2024-06-05 11:00:00'],
-    [aliceId,  'other',         'Request for ergonomic chair',                   'I have been experiencing back pain due to my current chair. I would like to request an ergonomic office chair.',    'medium',   'pending',     null, null,    '2024-06-06 09:30:00', '2024-06-06 09:30:00'],
-    [bobId,    'asset_request', 'Need laptop charger replacement',               'My laptop charger is broken. The cable has frayed and it no longer charges reliably.',                              'critical', 'approved',    null, adminId, '2024-06-06 14:00:00', '2024-06-07 10:00:00'],
-    [carolId,  'maintenance',   'Printer paper jam issue',                       'The HP printer on floor 1 is frequently jamming. It jams after every 3-4 prints.',                                 'medium',   'rejected',    getAsset('HP-P001-2023'), null, '2024-05-15 10:00:00', '2024-05-16 11:00:00'],
+    [aliceId,  'asset_request', 'Need a second monitor for dual-screen setup', 'I need a second monitor to improve productivity on development tasks. Currently working with a single screen.', 'high',     'pending',     null, null,    nowStr, nowStr],
+    [bobId,    'maintenance',   'Laptop fan making noise',                       'My Dell Latitude laptop fan has started making loud grinding noises. It gets very hot during video calls.',         'medium',   'in_progress', getAsset('DL-002-2024'), adminId, nowStr, nowStr],
+    [carolId,  'service',       'VPN access for remote work',                    'I need VPN access configured on my workstation to work from home on Fridays.',                                      'medium',   'approved',    null, adminId, nowStr, nowStr],
+    [davidId,  'asset_request', 'Request for wireless mouse',                    'My current wired mouse cable is damaged. I would prefer a wireless mouse for cleaner desk setup.',                  'low',      'completed',   null, adminId, nowStr, nowStr],
+    [eveId,    'maintenance',   'Webcam not detected by system',                 'The HP webcam assigned to me is not being detected by Windows. I have tried reinstalling drivers.',                 'high',     'pending',     getAsset('HP-W001-2024'), null, nowStr, nowStr],
+    [aliceId,  'other',         'Request for ergonomic chair',                   'I have been experiencing back pain due to my current chair. I would like to request an ergonomic office chair.',    'medium',   'pending',     null, null,    nowStr, nowStr],
+    [bobId,    'asset_request', 'Need laptop charger replacement',               'My laptop charger is broken. The cable has frayed and it no longer charges reliably.',                              'critical', 'approved',    null, adminId, nowStr, nowStr],
+    [carolId,  'maintenance',   'Printer paper jam issue',                       'The HP printer on floor 1 is frequently jamming. It jams after every 3-4 prints.',                                 'medium',   'rejected',    getAsset('HP-P001-2023'), null, nowStr, nowStr],
   ];
 
   for (const r of requests) {
@@ -135,27 +135,27 @@ async function seed() {
   const vpnReqId   = getReqId('VPN access for remote work');
 
   if (maintReqId) {
-    run('INSERT INTO request_comments (request_id,user_id,comment,created_at) VALUES (?,?,?,?)', [maintReqId, bobId,   'The noise is loudest when the laptop is under heavy load like during video meetings.', '2024-06-02 11:00:00']);
-    run('INSERT INTO request_comments (request_id,user_id,comment,created_at) VALUES (?,?,?,?)', [maintReqId, adminId, 'I have picked up the laptop for inspection. Will update you shortly.', '2024-06-03 11:00:00']);
-    run('INSERT INTO request_comments (request_id,user_id,comment,created_at) VALUES (?,?,?,?)', [maintReqId, bobId,   'Thank you! Please let me know if you need any additional information.', '2024-06-03 12:00:00']);
+    run('INSERT INTO request_comments (request_id,user_id,comment,created_at) VALUES (?,?,?,?)', [maintReqId, bobId,   'The noise is loudest when the laptop is under heavy load like during video meetings.', nowStr]);
+    run('INSERT INTO request_comments (request_id,user_id,comment,created_at) VALUES (?,?,?,?)', [maintReqId, adminId, 'I have picked up the laptop for inspection. Will update you shortly.', nowStr]);
+    run('INSERT INTO request_comments (request_id,user_id,comment,created_at) VALUES (?,?,?,?)', [maintReqId, bobId,   'Thank you! Please let me know if you need any additional information.', nowStr]);
   }
 
   if (vpnReqId) {
-    run('INSERT INTO request_comments (request_id,user_id,comment,created_at) VALUES (?,?,?,?)', [vpnReqId, carolId, 'I would need this setup before Friday this week as I am starting remote work then.', '2024-06-03 08:30:00']);
-    run('INSERT INTO request_comments (request_id,user_id,comment,created_at) VALUES (?,?,?,?)', [vpnReqId, adminId, 'Approved. I will configure VPN access by Thursday. Please check your email for instructions.', '2024-06-04 09:00:00']);
+    run('INSERT INTO request_comments (request_id,user_id,comment,created_at) VALUES (?,?,?,?)', [vpnReqId, carolId, 'I would need this setup before Friday this week as I am starting remote work then.', nowStr]);
+    run('INSERT INTO request_comments (request_id,user_id,comment,created_at) VALUES (?,?,?,?)', [vpnReqId, adminId, 'Approved. I will configure VPN access by Thursday. Please check your email for instructions.', nowStr]);
   }
 
   // ── Notifications ───────────────────────────────────────────
   const notifs = [
-    [aliceId,  'Asset Assigned to You',        'Dell Latitude 5540 (DL-001-2024) has been assigned to you.',          'success', 1, '2024-01-20 10:00:00'],
-    [aliceId,  'Asset Assigned to You',        'LG 27" 4K Monitor (LG-M001-2024) has been assigned to you.',          'success', 1, '2024-01-20 10:05:00'],
-    [bobId,    'Request In Progress 🔧',        'Your request "Laptop fan making noise" is now being worked on.',       'info',    0, '2024-06-03 11:00:00'],
-    [bobId,    'Request Approved ✅',           'Your request "Request for laptop charger replacement" has been approved.','success',0,'2024-06-07 10:00:00'],
-    [carolId,  'Request Approved ✅',           'Your request "VPN access for remote work" has been approved.',         'success', 0, '2024-06-04 09:00:00'],
-    [carolId,  'Request Rejected ❌',           'Your request "Printer paper jam issue" has been rejected.',            'error',   1, '2024-05-16 11:00:00'],
-    [davidId,  'Request Completed ✅',          'Your request "Request for wireless mouse" has been completed.',        'success', 0, '2024-05-22 16:00:00'],
-    [adminId,  'New Service Request',           'Alice Johnson submitted a new asset request: "Need a second monitor..."','info',  0, '2024-06-01 09:00:00'],
-    [adminId,  'New Service Request',           'Eve Davis submitted a new maintenance request: "Webcam not detected..."','info',  0, '2024-06-05 11:00:00'],
+    [aliceId,  'Asset Assigned to You',        'Dell Latitude 5540 (DL-001-2024) has been assigned to you.',          'success', 1, nowStr],
+    [aliceId,  'Asset Assigned to You',        'LG 27" 4K Monitor (LG-M001-2024) has been assigned to you.',          'success', 1, nowStr],
+    [bobId,    'Request In Progress 🔧',        'Your request "Laptop fan making noise" is now being worked on.',       'info',    0, nowStr],
+    [bobId,    'Request Approved ✅',           'Your request "Request for laptop charger replacement" has been approved.','success',0,nowStr],
+    [carolId,  'Request Approved ✅',           'Your request "VPN access for remote work" has been approved.',         'success', 0, nowStr],
+    [carolId,  'Request Rejected ❌',           'Your request "Printer paper jam issue" has been rejected.',            'error',   1, nowStr],
+    [davidId,  'Request Completed ✅',          'Your request "Request for wireless mouse" has been completed.',        'success', 0, nowStr],
+    [adminId,  'New Service Request',           'Alice Johnson submitted a new asset request: "Need a second monitor..."','info',  0, nowStr],
+    [adminId,  'New Service Request',           'Eve Davis submitted a new maintenance request: "Webcam not detected..."','info',  0, nowStr],
   ];
 
   for (const n of notifs) {
@@ -163,9 +163,9 @@ async function seed() {
   }
 
   // ── Audit Logs ──────────────────────────────────────────────
-  run('INSERT INTO audit_logs (user_id,action,entity_type,entity_id,ip_address,created_at) VALUES (?,?,?,?,?,?)', [adminId, 'LOGIN',  'user',  adminId, '127.0.0.1', '2024-06-01 08:00:00']);
-  run('INSERT INTO audit_logs (user_id,action,entity_type,entity_id,ip_address,created_at) VALUES (?,?,?,?,?,?)', [adminId, 'CREATE', 'asset', 1,       '127.0.0.1', '2024-01-15 10:00:00']);
-  run('INSERT INTO audit_logs (user_id,action,entity_type,entity_id,ip_address,created_at) VALUES (?,?,?,?,?,?)', [adminId, 'ASSIGN', 'asset', 1,       '127.0.0.1', '2024-01-20 10:00:00']);
+  run("INSERT INTO audit_logs (user_id,action,entity_type,entity_id,details,ip_address,created_at) VALUES (?,?,?,?,?,?,?)", [adminId, 'LOGIN',  'user',  adminId, 'System Admin logged in', '127.0.0.1', nowStr]);
+  run("INSERT INTO audit_logs (user_id,action,entity_type,entity_id,details,ip_address,created_at) VALUES (?,?,?,?,?,?,?)", [adminId, 'CREATE', 'asset', 1,       'Asset "Dell Latitude 5540" (DL-001-2024) was added', '127.0.0.1', nowStr]);
+  run("INSERT INTO audit_logs (user_id,action,entity_type,entity_id,details,ip_address,created_at) VALUES (?,?,?,?,?,?,?)", [adminId, 'ASSIGN', 'asset', 1,       '"Dell Latitude 5540" was assigned to Alice Johnson', '127.0.0.1', nowStr]);
 
   logger.info('✅ Database seeded successfully!');
   logger.info('');

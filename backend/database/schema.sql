@@ -119,6 +119,7 @@ CREATE TABLE IF NOT EXISTS audit_logs (
   action      TEXT    NOT NULL,
   entity_type TEXT    NOT NULL,
   entity_id   INTEGER,
+  details     TEXT,
   old_values  TEXT,
   new_values  TEXT,
   ip_address  TEXT,

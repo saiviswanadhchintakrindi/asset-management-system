@@ -15,7 +15,11 @@ const RequestController = {
   create(req, res, next) {
     try {
       const request = RequestService.create(req.body, req.user.id);
-      createAuditLog({ userId: req.user.id, action: 'CREATE', entityType: 'request', entityId: request.id, newValues: req.body, ipAddress: req.ip });
+      createAuditLog({
+        userId: req.user.id, action: 'CREATE', entityType: 'request', entityId: request.id,
+        details: `Service request "${request.title}" (${request.type}) was submitted by ${request.requester_name}`,
+        newValues: req.body, ipAddress: req.ip
+      });
       res.status(201).json({ success: true, message: 'Request submitted.', data: request });
     } catch (err) { next(err); }
   },
@@ -23,7 +27,11 @@ const RequestController = {
   updateStatus(req, res, next) {
     try {
       const updated = RequestService.updateStatus(req.params.id, req.body, req.user);
-      createAuditLog({ userId: req.user.id, action: 'STATUS_UPDATE', entityType: 'request', entityId: req.params.id, newValues: req.body, ipAddress: req.ip });
+      createAuditLog({
+        userId: req.user.id, action: 'STATUS_UPDATE', entityType: 'request', entityId: req.params.id,
+        details: `Request "${updated.title}" status changed to ${req.body.status}`,
+        newValues: req.body, ipAddress: req.ip
+      });
       res.json({ success: true, message: 'Request status updated.', data: updated });
     } catch (err) { next(err); }
   },
@@ -31,7 +39,11 @@ const RequestController = {
   delete(req, res, next) {
     try {
       const result = RequestService.delete(req.params.id, req.user);
-      createAuditLog({ userId: req.user.id, action: 'DELETE', entityType: 'request', entityId: req.params.id, ipAddress: req.ip });
+      createAuditLog({
+        userId: req.user.id, action: 'DELETE', entityType: 'request', entityId: req.params.id,
+        details: `Service request #${req.params.id} was deleted`,
+        ipAddress: req.ip
+      });
       res.json({ success: true, ...result });
     } catch (err) { next(err); }
   },

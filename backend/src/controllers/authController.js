@@ -7,7 +7,11 @@ const AuthController = {
     try {
       const { email, password } = req.body;
       const result = await AuthService.login(email, password);
-      createAuditLog({ userId: result.user.id, action: 'LOGIN', entityType: 'user', entityId: result.user.id, ipAddress: req.ip, userAgent: req.headers['user-agent'] });
+      createAuditLog({
+        userId: result.user.id, action: 'LOGIN', entityType: 'user', entityId: result.user.id,
+        details: `${result.user.name} logged in`,
+        ipAddress: req.ip, userAgent: req.headers['user-agent']
+      });
       res.json({ success: true, message: 'Login successful.', data: result });
     } catch (err) { next(err); }
   },
@@ -15,7 +19,11 @@ const AuthController = {
   async register(req, res, next) {
     try {
       const result = await AuthService.register(req.body);
-      createAuditLog({ userId: result.user.id, action: 'REGISTER', entityType: 'user', entityId: result.user.id, ipAddress: req.ip });
+      createAuditLog({
+        userId: result.user.id, action: 'REGISTER', entityType: 'user', entityId: result.user.id,
+        details: `${result.user.name} registered as ${result.user.role} in ${result.user.department || 'General'}`,
+        ipAddress: req.ip
+      });
       res.status(201).json({ success: true, message: 'Registration successful.', data: result });
     } catch (err) { next(err); }
   },

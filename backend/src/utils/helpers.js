@@ -4,17 +4,18 @@ const logger = require('./logger');
 /**
  * Create an audit log entry
  */
-function createAuditLog({ userId, action, entityType, entityId, oldValues, newValues, ipAddress, userAgent }) {
+function createAuditLog({ userId, action, entityType, entityId, details, oldValues, newValues, ipAddress, userAgent }) {
   try {
     const now = new Date().toISOString().replace('T', ' ').split('.')[0];
     run(`
-      INSERT INTO audit_logs (user_id, action, entity_type, entity_id, old_values, new_values, ip_address, user_agent, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO audit_logs (user_id, action, entity_type, entity_id, details, old_values, new_values, ip_address, user_agent, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `, [
       userId || null,
       action,
       entityType,
       entityId || null,
+      details || null,
       oldValues ? JSON.stringify(oldValues) : null,
       newValues ? JSON.stringify(newValues) : null,
       ipAddress || null,

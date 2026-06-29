@@ -2,11 +2,12 @@
    AssetFlow - Main Application SPA Logic
    ================================================================ */
 
+let _appInitialized = false;
+
 document.addEventListener('DOMContentLoaded', () => {
   const user = getCurrentUser();
 
   if (!user) {
-    // Show login page
     const authView = document.getElementById('auth-page') || document.getElementById('auth-view');
     if (authView) authView.classList.remove('hidden');
     const appView = document.getElementById('app-view') || document.getElementById('app');
@@ -15,19 +16,32 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  // User is logged in
+  initApp(user);
+});
+
+function showAppShell() {
+  if (_appInitialized) {
+    handleRoute();
+    return;
+  }
+  const user = getCurrentUser();
+  if (user) initApp(user);
+}
+
+function initApp(user) {
+  _appInitialized = true;
+
   const authView = document.getElementById('auth-page') || document.getElementById('auth-view');
   if (authView) authView.classList.add('hidden');
   const appView = document.getElementById('app-view') || document.getElementById('app');
   if (appView) appView.classList.remove('hidden');
 
-  // Set user info in sidebar
   const nameEl = document.getElementById('nav-user-name') || document.getElementById('sidebar-user-name');
   if (nameEl) nameEl.textContent = user.name;
-  
+
   const roleEl = document.getElementById('nav-user-role') || document.getElementById('sidebar-user-role');
   if (roleEl) roleEl.textContent = capitalize(user.role);
-  
+
   const avatar = document.getElementById('nav-avatar') || document.getElementById('sidebar-user-avatar');
   if (avatar) {
     avatar.textContent = user.name.charAt(0).toUpperCase();
@@ -37,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const topbarName = document.getElementById('topbar-name');
-  if (topbarName) topbarName.textContent = user.name.split(' ')[0]; // first name
+  if (topbarName) topbarName.textContent = user.name.split(' ')[0];
 
   const topbarAvatar = document.getElementById('topbar-avatar');
   if (topbarAvatar) {
@@ -47,34 +61,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Build navigation based on role
   buildNavigation(user.role);
 
-  // Initialize routing
   window.addEventListener('hashchange', handleRoute);
-  
-  // Initial route
+
   if (!window.location.hash) {
     window.location.hash = '#dashboard';
   } else {
     handleRoute();
   }
 
-  // Start checking notifications periodically
   if (typeof checkUnreadNotifications === 'function') {
     checkUnreadNotifications();
-    setInterval(checkUnreadNotifications, 60000); // Check every minute
+    setInterval(checkUnreadNotifications, 60000);
   }
 
-  // Hide initial loading overlay
   if (typeof hideLoading === 'function') hideLoading();
-});
+}
 
 function buildNavigation(role) {
   const adminElements = document.querySelectorAll('.admin-only');
   adminElements.forEach(el => {
     if (role === 'admin') {
-      el.style.display = 'flex'; // or whatever its default is
+      el.style.display = 'flex';
       if (el.classList.contains('nav-section-label')) {
         el.style.display = 'block';
       }
@@ -83,7 +92,6 @@ function buildNavigation(role) {
     }
   });
 
-  // Adjust label for assets based on role
   const assetsText = document.querySelector('#nav-assets .nav-text');
   if (assetsText) {
     assetsText.textContent = role === 'admin' ? 'Inventory' : 'My Assets';
@@ -93,12 +101,10 @@ function buildNavigation(role) {
 function handleRoute() {
   const hash = window.location.hash.slice(1) || 'dashboard';
   
-  // Update active nav state
-  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(l => l.classList.remove('active'));
   const activeLink = document.getElementById(`nav-${hash}`);
   if (activeLink) activeLink.classList.add('active');
 
-  // Load content
   const content = document.getElementById('page-content');
   content.innerHTML = `<div class="flex items-center justify-center h-full"><div class="loader-ring"></div></div>`;
 
@@ -132,7 +138,6 @@ function handleRoute() {
   }
 }
 
-// Utility to programmatically navigate
 function navigate(route) {
   window.location.hash = `#${route}`;
 }

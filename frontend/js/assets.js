@@ -28,7 +28,10 @@ function renderAdminAssets(container) {
         <h2>Asset Inventory</h2>
         <p>Manage office equipment, hardware, and furniture.</p>
       </div>
-      <button class="btn btn-primary" onclick="showAssetModal()">+ Add Asset</button>
+      <div class="flex gap-2">
+        <button class="btn btn-secondary" onclick="exportAssetsCSV()">📥 Export CSV</button>
+        <button class="btn btn-primary" onclick="showAssetModal()">+ Add Asset</button>
+      </div>
     </div>
 
     <div class="table-container">
@@ -417,4 +420,45 @@ function getCategoryEmoji(cat) {
     'Printer': '🖨️', 'Network Equipment': '🛜', 'Mobile Device': '📱', 'Projector': '📽️'
   };
   return map[cat] || '📦';
+}
+
+async function exportAssetsCSV() {
+  try {
+    const res = await apiFetch('/assets?limit=10000');
+    const assets = res.data.rows;
+
+    if (!assets || !assets.length) {
+      showToast('No asset data to export', 'warning');
+      return;
+    }
+
+    const headers = ['Asset Name', 'Serial Number', 'Manufacturer', 'Model', 'Category', 'Status', 'Location', 'Purchase Date', 'Purchase Cost (INR)', 'Assigned To', 'Notes'];
+    const rows = assets.map(a => [
+      a.name || '',
+      a.serial_number || '',
+      a.manufacturer || '',
+      a.model || '',
+      a.category_name || '',
+      capitalize(a.status || ''),
+      a.location || '',
+      a.purchase_date ? a.purchase_date.split(' ')[0] : '',
+      a.purchase_cost || 0,
+      a.assigned_to_name || 'Unassigned',
+      a.notes || ''
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(','))
+    ].join('\n');
+
+    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `asset_inventory_${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    showToast('Assets exported successfully', 'success');
+  } catch (err) {
+    showToast('Failed to export assets', 'error');
+  }
 }

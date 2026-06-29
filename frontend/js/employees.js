@@ -14,7 +14,10 @@ async function loadEmployees() {
         <h2>Employee Directory</h2>
         <p>Manage user accounts, roles, and departments</p>
       </div>
-      <button class="btn btn-primary" onclick="showEmployeeModal()">+ Add Employee</button>
+      <div class="flex gap-2">
+        <button class="btn btn-secondary" onclick="exportEmployeesCSV()">📥 Export CSV</button>
+        <button class="btn btn-primary" onclick="showEmployeeModal()">+ Add Employee</button>
+      </div>
     </div>
 
     <div class="table-container">
@@ -95,7 +98,7 @@ function renderEmployeesTable(data) {
   tbody.innerHTML = allEmployees.map(u => `
     <tr>
       <td>
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-4">
           <div class="user-avatar-sm" style="${u.role==='admin' ? 'background: linear-gradient(135deg, var(--danger), var(--warning))' : ''}">${u.name.charAt(0).toUpperCase()}</div>
           <div>
             <div class="font-medium text-sm">${u.name}</div>
@@ -234,7 +237,44 @@ async function saveEmployee(e, id) {
     fetchEmployees();
   } catch (err) {
     showToast(err.message, 'error');
-    btn.disabled = false;
+  }
+}
+
+async function exportEmployeesCSV() {
+  try {
+    // Fetch all employees without pagination
+    const res = await apiFetch('/users?limit=10000');
+    const employees = res.data.rows;
+
+    if (!employees || !employees.length) {
+      showToast('No employee data to export', 'warning');
+      return;
+    }
+
+    const headers = ['Name', 'Email', 'Department', 'Role', 'Phone', 'Status', 'Joined Date'];
+    const rows = employees.map(e => [
+      e.name || '',
+      e.email || '',
+      e.department || '',
+      capitalize(e.role || ''),
+      e.phone || '',
+      e.is_active ? 'Active' : 'Inactive',
+      e.created_at ? e.created_at.split(' ')[0] : ''
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(','))
+    ].join('\n');
+
+    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `employees_${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    showToast('Employees exported successfully', 'success');
+  } catch (err) {
+    showToast('Failed to export employees', 'error');
   }
 }
 

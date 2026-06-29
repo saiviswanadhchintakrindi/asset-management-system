@@ -126,6 +126,9 @@ function renderAssetReportOutput(data) {
   const container = document.getElementById('report-output-container');
   container.classList.remove('hidden');
 
+  // Store data globally for CSV export
+  window._reportAssetData = data.assets;
+
   const totalCost = data.summary.reduce((sum, s) => sum + (s.total_value || 0), 0);
   const totalAssets = data.assets.length;
 
@@ -137,7 +140,7 @@ function renderAssetReportOutput(data) {
           <p class="text-sm text-secondary mt-1">Generated: ${formatDateTime(data.generated_at)}</p>
         </div>
         <div class="flex gap-2">
-          <button class="btn btn-secondary btn-sm" onclick="exportToCSV(reportAssetData, 'asset_inventory')">📥 Export CSV</button>
+          <button class="btn btn-secondary btn-sm" onclick="exportReportCSV('asset')">📥 Export CSV</button>
           <button class="btn btn-secondary btn-sm" onclick="window.print()">🖨️ Print</button>
         </div>
       </div>
@@ -158,8 +161,6 @@ function renderAssetReportOutput(data) {
           </div>
         </div>
       </div>
-
-      <script>window.reportAssetData = ${JSON.stringify(data.assets)};</script>
 
       <h4 class="font-semibold mb-3">Asset List</h4>
       <div class="table-container">
@@ -224,6 +225,9 @@ function renderRequestReportOutput(data) {
   const container = document.getElementById('report-output-container');
   container.classList.remove('hidden');
 
+  // Store data globally for CSV export
+  window._reportRequestData = data.requests;
+
   container.innerHTML = `
     <div class="card bg-bg-light border-info/30 shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
       <div class="flex justify-between items-center mb-6 pb-4 border-b border-border">
@@ -232,12 +236,10 @@ function renderRequestReportOutput(data) {
           <p class="text-sm text-secondary mt-1">Generated: ${formatDateTime(data.generated_at)}</p>
         </div>
         <div class="flex gap-2">
-          <button class="btn btn-secondary btn-sm" onclick="exportToCSV(reportRequestData, 'service_requests')">📥 Export CSV</button>
+          <button class="btn btn-secondary btn-sm" onclick="exportReportCSV('request')">📥 Export CSV</button>
           <button class="btn btn-secondary btn-sm" onclick="window.print()">🖨️ Print</button>
         </div>
       </div>
-
-      <script>window.reportRequestData = ${JSON.stringify(data.requests)};</script>
 
       <div class="grid grid-cols-4 gap-4 mb-8">
         <div class="bg-bg-input p-4 rounded-lg border border-border">

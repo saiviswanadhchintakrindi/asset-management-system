@@ -16,20 +16,8 @@
     <div class="loader-ring"></div>
   </div>
 
-  <!-- Ambient Realistic Background -->
-  <div class="ambient-bg">
-    <div class="ambient-orb orb-primary"></div>
-    <div class="ambient-orb orb-secondary"></div>
-    <div class="ambient-orb orb-accent"></div>
-    <div class="ambient-noise"></div>
-  </div>
-
   <!-- Auth Pages -->
   <div id="auth-page" class="auth-page hidden">
-    <div class="auth-bg">
-      <div class="auth-blob auth-blob-1"></div>
-      <div class="auth-blob auth-blob-2"></div>
-    </div>
     <div class="auth-container">
       <div class="auth-brand">
         <div class="brand-icon">⚡</div>
@@ -56,11 +44,6 @@
             <div id="login-error" class="form-error hidden"></div>
             <button type="submit" id="login-btn" class="btn btn-primary btn-full">Sign In</button>
           </form>
-          <div class="auth-demo-hints">
-            <p class="demo-label">Demo Credentials:</p>
-            <button class="demo-btn" onclick="fillDemo('admin@example.com','Admin@123')">🔑 Admin Login</button>
-            <button class="demo-btn" onclick="fillDemo('alice@example.com','Employee@123')">👤 Employee Login</button>
-          </div>
           <p class="auth-switch">New employee? <a href="#" onclick="showRegister()">Create account</a></p>
         </div>
 
@@ -148,7 +131,7 @@
       </nav>
 
       <div class="sidebar-footer">
-        <a href="#profile" class="nav-item" data-page="profile">
+        <a href="#profile" class="nav-item" data-page="profile" id="nav-profile">
           <span class="nav-icon">⚙️</span><span class="nav-text">Profile & Settings</span>
         </a>
         <button class="nav-item logout-btn" onclick="logout()" id="logout-btn">

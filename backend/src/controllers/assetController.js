@@ -1,6 +1,7 @@
 const AssetService = require('../services/assetService');
 const CategoryModel = require('../models/categoryModel');
 const { createAuditLog } = require('../utils/helpers');
+const { queryOne } = require('../utils/db-helper');
 
 const AssetController = {
   getAll(req, res, next) {
@@ -16,7 +17,11 @@ const AssetController = {
   create(req, res, next) {
     try {
       const asset = AssetService.create(req.body);
-      createAuditLog({ userId: req.user.id, action: 'CREATE', entityType: 'asset', entityId: asset.id, newValues: req.body, ipAddress: req.ip });
+      createAuditLog({
+        userId: req.user.id, action: 'CREATE', entityType: 'asset', entityId: asset.id,
+        details: `Asset "${asset.name}" (${asset.serial_number || 'No SN'}) was added`,
+        newValues: req.body, ipAddress: req.ip
+      });
       res.status(201).json({ success: true, message: 'Asset created.', data: asset });
     } catch (err) { next(err); }
   },
@@ -24,15 +29,25 @@ const AssetController = {
   update(req, res, next) {
     try {
       const asset = AssetService.update(req.params.id, req.body);
-      createAuditLog({ userId: req.user.id, action: 'UPDATE', entityType: 'asset', entityId: req.params.id, newValues: req.body, ipAddress: req.ip });
+      createAuditLog({
+        userId: req.user.id, action: 'UPDATE', entityType: 'asset', entityId: req.params.id,
+        details: `Asset "${asset.name}" was updated`,
+        newValues: req.body, ipAddress: req.ip
+      });
       res.json({ success: true, message: 'Asset updated.', data: asset });
     } catch (err) { next(err); }
   },
 
   delete(req, res, next) {
     try {
+      const asset = AssetService.getById(req.params.id);
+      const name = asset.name;
       const result = AssetService.delete(req.params.id);
-      createAuditLog({ userId: req.user.id, action: 'DELETE', entityType: 'asset', entityId: req.params.id, ipAddress: req.ip });
+      createAuditLog({
+        userId: req.user.id, action: 'DELETE', entityType: 'asset', entityId: req.params.id,
+        details: `Asset "${name}" was deleted`,
+        ipAddress: req.ip
+      });
       res.json({ success: true, ...result });
     } catch (err) { next(err); }
   },
@@ -40,16 +55,26 @@ const AssetController = {
   assign(req, res, next) {
     try {
       const asset = AssetService.assign(req.params.id, req.body.user_id, req.user.id, req.body.notes);
-      createAuditLog({ userId: req.user.id, action: 'ASSIGN', entityType: 'asset', entityId: req.params.id, newValues: req.body, ipAddress: req.ip });
+      const user = queryOne('SELECT name FROM users WHERE id = ?', [req.body.user_id]);
+      createAuditLog({
+        userId: req.user.id, action: 'ASSIGN', entityType: 'asset', entityId: req.params.id,
+        details: `"${asset.name}" was assigned to ${user ? user.name : 'User #' + req.body.user_id}`,
+        newValues: req.body, ipAddress: req.ip
+      });
       res.json({ success: true, message: 'Asset assigned.', data: asset });
     } catch (err) { next(err); }
   },
 
   returnAsset(req, res, next) {
     try {
-      const asset = AssetService.returnAsset(req.params.id, req.user.id);
-      createAuditLog({ userId: req.user.id, action: 'RETURN', entityType: 'asset', entityId: req.params.id, ipAddress: req.ip });
-      res.json({ success: true, message: 'Asset returned.', data: asset });
+      const asset = AssetService.getById(req.params.id);
+      const result = AssetService.returnAsset(req.params.id, req.user.id);
+      createAuditLog({
+        userId: req.user.id, action: 'RETURN', entityType: 'asset', entityId: req.params.id,
+        details: `"${asset.name}" was returned and is now available`,
+        ipAddress: req.ip
+      });
+      res.json({ success: true, message: 'Asset returned.', data: result });
     } catch (err) { next(err); }
   },
 
@@ -63,7 +88,6 @@ const AssetController = {
     catch (err) { next(err); }
   },
 
-  // Categories
   getCategories(req, res, next) {
     try { res.json({ success: true, data: CategoryModel.findAll() }); }
     catch (err) { next(err); }
@@ -72,7 +96,11 @@ const AssetController = {
   createCategory(req, res, next) {
     try {
       const cat = CategoryModel.create(req.body);
-      createAuditLog({ userId: req.user.id, action: 'CREATE', entityType: 'category', entityId: cat.id, newValues: req.body, ipAddress: req.ip });
+      createAuditLog({
+        userId: req.user.id, action: 'CREATE', entityType: 'category', entityId: cat.id,
+        details: `Category "${cat.name}" was created`,
+        newValues: req.body, ipAddress: req.ip
+      });
       res.status(201).json({ success: true, message: 'Category created.', data: cat });
     } catch (err) { next(err); }
   },

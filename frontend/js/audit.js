@@ -29,11 +29,14 @@ async function loadAudit() {
           <select id="log-action" onchange="filterLogs()">
             <option value="">All Actions</option>
             <option value="LOGIN">LOGIN</option>
+            <option value="REGISTER">REGISTER</option>
             <option value="CREATE">CREATE</option>
             <option value="UPDATE">UPDATE</option>
             <option value="DELETE">DELETE</option>
             <option value="ASSIGN">ASSIGN</option>
             <option value="RETURN">RETURN</option>
+            <option value="STATUS_UPDATE">STATUS UPDATE</option>
+            <option value="DEACTIVATE">DEACTIVATE</option>
           </select>
           <input type="date" id="log-from" title="From Date" onchange="filterLogs()" />
           <input type="date" id="log-to" title="To Date" onchange="filterLogs()" />
@@ -46,13 +49,11 @@ async function loadAudit() {
               <th>Timestamp</th>
               <th>Action</th>
               <th>User</th>
-              <th>Entity</th>
-              <th>Entity ID</th>
-              <th>IP Address</th>
+              <th>Details</th>
             </tr>
           </thead>
           <tbody id="log-tbody">
-            <tr><td colspan="6" class="text-center py-8"><div class="loader-ring mx-auto"></div></td></tr>
+            <tr><td colspan="4" class="text-center py-8"><div class="loader-ring mx-auto"></div></td></tr>
           </tbody>
         </table>
       </div>
@@ -87,21 +88,19 @@ function renderLogsTable(data) {
   const tbody = document.getElementById('log-tbody');
 
   if (allLogs.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state py-8"><div class="empty-title">No audit logs found</div></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state py-8"><div class="empty-title">No audit logs found</div></div></td></tr>`;
     document.getElementById('log-pagination').classList.add('hidden');
     return;
   }
 
   tbody.innerHTML = allLogs.map(l => `
-    <tr class="hover:bg-white/5 cursor-help" title="${l.user_agent || 'Unknown Device'}">
+    <tr class="hover:bg-white/5 cursor-help" title="${l.user_agent || ''}">
       <td class="text-muted font-mono whitespace-nowrap">${formatDateTime(l.created_at)}</td>
-      <td><span class="badge ${getActionBadgeColor(l.action)} px-1.5 py-0.5 text-[9px] uppercase">${l.action}</span></td>
+      <td><span class="badge ${getActionBadgeColor(l.action)} px-1.5 py-0.5 text-[9px] uppercase">${l.action.replace(/_/g, ' ')}</span></td>
       <td>
-        ${l.user_name ? `<div class="font-medium">${l.user_name}</div><div class="text-[9px] text-muted">${l.user_email}</div>` : '<span class="text-muted italic">System / Unknown</span>'}
+        ${l.user_name ? `<div class="font-medium text-xs">${l.user_name}</div><div class="text-[9px] text-muted">${l.user_email || ''}</div>` : '<span class="text-muted italic">System</span>'}
       </td>
-      <td class="uppercase text-[10px] tracking-wider text-muted">${l.entity_type}</td>
-      <td class="font-mono">${l.entity_id || '-'}</td>
-      <td class="font-mono text-muted">${l.ip_address || '-'}</td>
+      <td class="text-xs max-w-[280px] truncate" title="${l.details || l.action + ' ' + l.entity_type + ' #' + l.entity_id}">${l.details || l.action + ' ' + l.entity_type + ' #' + (l.entity_id || '')}</td>
     </tr>
   `).join('');
 
@@ -125,11 +124,14 @@ function changeLogPage(p) { logFilters.page = p; fetchLogs(); }
 function getActionBadgeColor(action) {
   const map = {
     'LOGIN': 'badge-primary',
+    'REGISTER': 'badge-primary',
     'CREATE': 'badge-success',
     'UPDATE': 'badge-info',
     'DELETE': 'badge-danger',
     'ASSIGN': 'badge-warning',
-    'RETURN': 'badge-success'
+    'RETURN': 'badge-info',
+    'STATUS_UPDATE': 'badge-warning',
+    'DEACTIVATE': 'badge-danger'
   };
   return map[action] || 'badge-muted';
 }
